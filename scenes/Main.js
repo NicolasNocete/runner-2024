@@ -15,14 +15,43 @@ export default class Main extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48,
     });
-
     this.load.image("triangle", "../public/assets/triangle.png");
+
+    this.load.image("mountains", "../public/assets/mountains.png");
+    this.load.image("trees", "../public/assets/trees.png");
   }
 
   create() {
     //add images
     this.cielo = this.add.image(400, 300, "skay");
     this.cielo.setScale(2);
+
+    //create tileSprites
+    this.mountains = this.add.tileSprite(
+      this.game.config.width / 2,
+      this.game.config.height / 2,
+      this.game.config.width,
+      this.game.config.height,
+      "mountains"
+    );
+    this.trees = this.add.tileSprite(
+      this.game.config.width / 2,
+      this.game.config.height / 2,
+      this.game.config.width,
+      this.game.config.height,
+      "trees"
+    );
+
+    this.parallaxLayers = [
+      {
+        speed: 0.2,
+        sprite: this.mountains,
+      },
+      {
+        speed: 0.5,
+        sprite: this.trees,
+      },
+    ];
 
     // crear grupa plataformas
     this.plataformas = this.physics.add.group();
@@ -107,6 +136,14 @@ export default class Main extends Phaser.Scene {
     if (this.cursor.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-230);
     }
+
+    this.moveParallax();
+  }
+
+  moveParallax() {
+    this.parallaxLayers.forEach((layer) => {
+      layer.sprite.tilePositionX += layer.speed;
+    });
   }
 
   createPlatform() {
